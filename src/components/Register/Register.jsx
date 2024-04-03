@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { Link } from "react-router-dom";
@@ -35,18 +35,22 @@ const Register = () => {
             setregistergError('Please Accept our Terms and Conditons')
             return
         }
-
+        // create user
         createUserWithEmailAndPassword(auth, email, password)
-            .then(result => {
-                const user = result.user
-                setregisterSuccess('User Register Successfully')
-                console.log(user);
+        .then(result => {
+            const user = result.user
+            setregisterSuccess('User Register Successfully')
+            console.log(user);
+            sendEmailVerification(user)
+            .then(()=>{
+                alert('please verify your email');  
             })
-            .catch(error => {
-                setregistergError(error.message)
-                console.error(error);
-            })
-
+        })
+        .catch(error => {
+            setregistergError(error.message)
+            console.error(error);
+        })
+        
     }
     return (
         <div className="w-3/5 mx-auto">

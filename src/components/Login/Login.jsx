@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { useRef, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { Link } from "react-router-dom";
@@ -21,9 +21,12 @@ const Login = () => {
 
         signInWithEmailAndPassword(auth, email, password)
             .then(result => {
-                const user = result.user
-                setLoginSuccess('Login successfuly')
-                console.log(user);
+                if (result.user.emailVerified) {
+                    setLoginSuccess('Login successfuly')
+                } else {
+                    alert('please varify your email')
+                }
+                console.log(result.user);
             })
             .catch(error => {
                 setLogIngError(error.message)
@@ -32,14 +35,20 @@ const Login = () => {
     }
     const handleForgotPassword = () => {
         const email = emailRef.current.value;
-        console.log(email);
         if (!email) {
-
-            console.log("please provide an email ", email);
+            console.log("please provide an email ");
         }
         else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
             console.log('Please write a valid email');
         }
+
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                console.log("checked your mail");
+            })
+            .catch(error => {
+                console.log(error.error);
+            })
     }
     return (
         <div className="hero min-h-screen bg-base-200 rounded-xl">
